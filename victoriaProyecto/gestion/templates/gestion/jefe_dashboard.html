@@ -39,12 +39,20 @@
             }
         }
 
+        /* Imagen del logo */
+        .logo {
+            width: 150px;
+            margin-top: 20px;
+            animation: fadeIn 2s ease-in-out forwards;
+        }
+
         .dashboard-container {
             background-color: #fff;
             padding: 40px;
             border-radius: 10px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-            width: 600px;
+            width: 80%;
+            max-width: 800px;
             text-align: center;
             margin-top: 50px;
         }
@@ -55,9 +63,14 @@
             margin-bottom: 30px;
         }
 
+        nav {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
         nav a {
             display: inline-block;
-            margin: 10px;
             padding: 15px 25px;
             background-color: #580367;
             color: white;
@@ -65,6 +78,7 @@
             border-radius: 30px;
             transition: all 0.3s ease;
             font-size: 16px;
+            text-align: center;
         }
 
         nav a:hover {
@@ -95,14 +109,22 @@
 </head>
 <body>
 
+    {% load static %} <!-- Carga los archivos estáticos aquí -->
+
     <!-- Título del proyecto con animación -->
     <div class="title">Victoria Bisutería y Accesorios</div>
+
+    <!-- Imagen del logo -->
+    <img src="../../images/logo.jpg" alt="Logo de Victoria Bisutería y Accesorios" class="logo">
+
+
+
 
     <!-- Panel de jefe -->
     <div class="dashboard-container">
         <h1>Bienvenido al Panel de Jefe</h1>
         <nav>
-            <a href="{% url 'inventario_jefe' %}"><i class="fas fa-boxes"></i> Inventario</a> <!-- Corregido -->
+            <a href="{% url 'inventario_jefe' %}"><i class="fas fa-boxes"></i> Inventario</a>
             <a href="#"><i class="fas fa-chart-line"></i> Ventas</a>
             <a href="{% url 'generar_reportes' %}"><i class="fas fa-file-alt"></i> Reportes</a>
             <a href="{% url 'gestion_empleados' %}"><i class="fas fa-users"></i> Usuarios</a>

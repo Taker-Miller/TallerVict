@@ -27,12 +27,14 @@ class Producto(models.Model):
     nombre = models.CharField(max_length=100)
     precio = models.DecimalField(max_digits=10, decimal_places=2)
     stock = models.IntegerField()
+    stock_minimo = models.IntegerField(default=1)  
 
     def __str__(self):
         return self.nombre
 
+
 class Venta(models.Model):
-    producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE)  # Relación con Producto
     cantidad = models.IntegerField()
     total = models.DecimalField(max_digits=10, decimal_places=2)
     fecha = models.DateTimeField(auto_now_add=True)
@@ -40,12 +42,9 @@ class Venta(models.Model):
     def __str__(self):
         return f"Venta de {self.cantidad} {self.producto.nombre}"
 
-
-
-
 class Empleado(models.Model):
     nombre = models.CharField(max_length=100)
-    rol = models.CharField(max_length=50)  # Por ejemplo: Jefe, Empleado, etc.
+    rol = models.CharField(max_length=50)  # Ejemplo: jefe, trabajador, etc.
 
     def __str__(self):
         return self.nombre

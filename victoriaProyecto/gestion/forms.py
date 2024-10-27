@@ -1,19 +1,18 @@
 from django import forms
-from .models import Producto  # Importamos el modelo Producto
+from .models import Producto
 
 class ProductoForm(forms.ModelForm):
     class Meta:
         model = Producto
-        fields = ['nombre', 'precio', 'stock']  # Ajusta los campos según tu modelo Producto
+        fields = ['nombre', 'precio', 'stock', 'stock_minimo']  # Añadir stock_minimo aquí
 
-        # Definimos etiquetas para que se muestren en el formulario
         labels = {
             'nombre': 'Nombre del Producto',
             'precio': 'Precio',
             'stock': 'Stock Disponible',
+            'stock_minimo': 'Stock Mínimo',  # Etiqueta para el nuevo campo
         }
 
-        # Definimos los widgets (apariencia de los campos) para dar estilos y personalizar los inputs
         widgets = {
             'nombre': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -22,15 +21,18 @@ class ProductoForm(forms.ModelForm):
             'precio': forms.NumberInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Introduce el precio',
-                'step': '0.01'  # Para manejar decimales en el precio
+                'step': '0.01'
             }),
             'stock': forms.NumberInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Cantidad en stock'
             }),
+            'stock_minimo': forms.NumberInput(attrs={  # Nuevo widget para stock mínimo
+                'class': 'form-control',
+                'placeholder': 'Introduce el stock mínimo'
+            }),
         }
 
-    # Validación personalizada de los datos
     def clean_precio(self):
         precio = self.cleaned_data.get('precio')
         if precio <= 0:
@@ -42,3 +44,9 @@ class ProductoForm(forms.ModelForm):
         if stock < 0:
             raise forms.ValidationError('El stock no puede ser negativo.')
         return stock
+
+    def clean_stock_minimo(self):
+        stock_minimo = self.cleaned_data.get('stock_minimo')
+        if stock_minimo < 0:
+            raise forms.ValidationError('El stock mínimo no puede ser negativo.')
+        return stock_minimo

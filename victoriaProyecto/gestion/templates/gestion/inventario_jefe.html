@@ -24,7 +24,7 @@
             padding: 40px;
             border-radius: 10px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-            width: 900px;
+            width: 1000px;
             text-align: center;
         }
 
@@ -64,33 +64,32 @@
             background-color: #6f0b75;
         }
 
-        .inventory-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px;
+        table {
+            width: 100%;
+            border-collapse: collapse;
             margin-bottom: 30px;
         }
 
-        .inventory-item {
-            background-color: #580367;
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 12px;
             text-align: left;
         }
 
-        .inventory-item h3 {
-            margin-bottom: 10px;
-            font-size: 18px;
+        th {
+            background-color: #580367;
+            color: white;
         }
 
-        .inventory-item p {
-            font-size: 16px;
+        tr:nth-child(even) {
+            background-color: #f4f4f9;
         }
 
         .action-btn {
             padding: 5px 10px;
-            margin-top: 5px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
@@ -136,9 +135,51 @@
         .back-btn:hover {
             background-color: #c9302c;
         }
+
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .alert-success {
+            color: #3c763d;
+            background-color: #dff0d8;
+            border-color: #d6e9c6;
+        }
+
+        .alert-error {
+            color: #a94442;
+            background-color: #f2dede;
+            border-color: #ebccd1;
+        }
+
     </style>
 </head>
 <body>
+
+    <!-- Script para ocultar los mensajes después de 5 segundos -->
+    <script>
+        setTimeout(function() {
+            let messages = document.querySelector('.messages');
+            if (messages) {
+                messages.style.display = 'none';
+            }
+        }, 5000);  // 5 segundos
+    </script>
+
+    <!-- Bloque para mostrar los mensajes de Django -->
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert {{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 
     <div class="inventory-container">
         <h1>Inventario Actual - Jefe</h1>
@@ -148,30 +189,32 @@
             <button><i class="fas fa-search"></i> Buscar</button>
         </div>
 
-        <div class="inventory-grid">
-            <div class="inventory-item">
-                <h3>Producto</h3>
-                <p>Collar</p>
-                <p>Pulsera Plata</p>
-            </div>
-            <div class="inventory-item">
-                <h3>Precio</h3>
-                <p>$5,500</p>
-                <p>$10,000</p>
-            </div>
-            <div class="inventory-item">
-                <h3>Stock</h3>
-                <p>3</p>
-                <p>2</p>
-            </div>
-            <div class="inventory-item">
-                <h3>Acciones</h3>
-                <button class="action-btn edit-btn">Editar</button>
-                <button class="action-btn delete-btn">Eliminar</button>
-            </div>
-        </div>
+        <!-- Tabla de productos -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for producto in productos %}
+                <tr>
+                    <td>{{ producto.nombre }}</td>
+                    <td>${{ producto.precio }}</td>
+                    <td>{{ producto.stock }}</td>
+                    <td>
+                        <a href="{% url 'editar_producto' pk=producto.pk %}" class="action-btn edit-btn">Editar</a>
+                        <a href="{% url 'eliminar_producto' pk=producto.pk %}" class="action-btn delete-btn">Eliminar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
-        <button class="add-btn"><i class="fas fa-plus"></i> Añadir Producto</button>
+        <a href="{% url 'agregar_producto' %}" class="add-btn"><i class="fas fa-plus"></i> Añadir Producto</a>
         <a href="{% url 'jefe_dashboard' %}" class="back-btn"><i class="fas fa-arrow-left"></i> Volver</a>
     </div>
 

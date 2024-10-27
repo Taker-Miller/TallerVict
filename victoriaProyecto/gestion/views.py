@@ -3,11 +3,12 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.shortcuts import render
 from django.utils.dateparse import parse_date
-
-
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
 from .forms import ProductoForm
-
-from .models import Empleado, Producto, Venta  # Asegúrate de que tienes un modelo llamado Producto
+from .models import Producto
+from .forms import ProductoForm
+from .models import Empleado, Producto, Venta 
 
 # Vista de login
 def login_view(request):
@@ -40,29 +41,44 @@ def inventario_jefe_view(request):
     productos = Producto.objects.all()  # Obtenemos todos los productos
     return render(request, 'gestion/inventario_jefe.html', {'productos': productos})
 
+
+
+
+# Vista para añadir un producto
 def agregar_producto(request):
     if request.method == 'POST':
         form = ProductoForm(request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, 'Producto añadido con éxito.')
-            return redirect('inventario_jefe')
+            return redirect('inventario_jefe')  # Redirige al inventario después de añadir un producto
     else:
         form = ProductoForm()
+
     return render(request, 'gestion/agregar_producto.html', {'form': form})
 
+
 # Vista para editar un producto existente
+
 def editar_producto(request, pk):
     producto = get_object_or_404(Producto, pk=pk)
     if request.method == 'POST':
         form = ProductoForm(request.POST, instance=producto)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Producto actualizado con éxito.')
-            return redirect('inventario_jefe')
+            # Mostrar mensaje de éxito con el stock restante
+            messages.success(request, f'El producto "{producto.nombre}" ha sido actualizado. Stock restante: {producto.stock}')
+            
+            # Comprobar si el stock está por debajo del stock mínimo
+            if producto.stock <= producto.stock_minimo:
+                messages.warning(request, f'¡Atención! El stock del producto "{producto.nombre}" está por debajo del nivel mínimo ({producto.stock_minimo}).')
+            
+            return redirect('inventario_jefe')  # Redirige al inventario del jefe
     else:
         form = ProductoForm(instance=producto)
+    
     return render(request, 'gestion/editar_producto.html', {'form': form, 'producto': producto})
+
 
 # Vista para eliminar un producto
 def eliminar_producto(request, pk):
@@ -102,8 +118,8 @@ from .models import Empleado
 
 # Vista para la lista de empleados
 def lista_empleados(request):
-    empleados = Empleado.objects.all()  # Obtener todos los empleados
-    return render(request, 'gestion/gestion_empleados.html', {'empleados': empleados})
+    empleados = Empleado.objects.all()
+    return render(request, 'gestion/lista_empleados.html', {'empleados': empleados})
 
 # Vista para agregar un empleado (esto lo usaremos más adelante)
 def agregar_empleado(request):
@@ -232,3 +248,16 @@ def registrar_venta(request):
 def logout_view(request):
     logout(request)
     return redirect('login')  # Redirige a la página de login después de cerrar sesión
+
+
+
+def eliminar_producto(request, pk):
+    producto = get_object_or_404(Producto, pk=pk)
+    
+    if request.method == 'POST':  # Si se confirma la eliminación
+        producto.delete()
+        messages.success(request, f'Producto "{producto.nombre}" eliminado con éxito.')
+        return redirect('inventario_jefe')  # Redirigir al inventario del jefe después de eliminar
+    
+    return render(request, 'gestion/eliminar_producto.html', {'producto': producto})
+

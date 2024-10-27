@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Añadir Producto</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .form-container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            width: 500px;
+            text-align: center;
+        }
+
+        .form-container h1 {
+            font-size: 28px;
+            color: #580367;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        form input, form button {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #580367;
+            border-radius: 5px;
+            outline: none;
+            width: 100%;
+        }
+
+        form button {
+            background-color: #580367;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        form button:hover {
+            background-color: #6f0b75;
+        }
+
+        .back-btn {
+            display: block;
+            margin-top: 20px;
+            text-decoration: none;
+            background-color: #d9534f;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .back-btn:hover {
+            background-color: #c9302c;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Añadir Nuevo Producto</h1>
+        
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit"><i class="fas fa-plus"></i> Añadir Producto</button>
+        </form>
+        
+        <a href="{% url 'inventario_jefe' %}" class="back-btn"><i class="fas fa-arrow-left"></i> Volver al Inventario</a>
+    </div>
+</body>
+</html>

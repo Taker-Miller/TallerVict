@@ -64,6 +64,19 @@
             background-color: #6f0b75;
         }
 
+        .report-type-selection {
+            margin-bottom: 30px;
+        }
+
+        .report-type-selection select {
+            padding: 10px;
+            font-size: 16px;
+            width: 100%;
+            border: 1px solid #580367;
+            border-radius: 5px;
+            outline: none;
+        }
+
         .report-result {
             margin-top: 30px;
         }
@@ -98,24 +111,74 @@
     <div class="report-container">
         <h1>Generar Reportes</h1>
 
+        <!-- Selección de fechas -->
         <div class="date-selection">
             <input type="date" placeholder="Desde">
             <input type="date" placeholder="Hasta">
         </div>
 
-        <button class="btn"><i class="fas fa-file-alt"></i> Generar Reporte</button>
-
-        <div class="report-result">
-            <div class="report-item">
-                <h3>Fecha: 12/08/2024</h3>
-                <p>Total de Ventas: $400.00</p>
-            </div>
+        <!-- Selección del tipo de reporte -->
+        <div class="report-type-selection">
+            <label for="tipo_reporte">Selecciona el tipo de reporte:</label>
+            <select name="tipo_reporte" id="tipo_reporte" onchange="cambiarReporte()">
+                <option value="ventas">Reporte de Ventas</option>
+                <option value="inventario">Reporte de Inventario</option>
+                <option value="empleados">Reporte de Empleados</option>
+            </select>
         </div>
 
-        <button class="btn"><i class="fas fa-save"></i> Guardar Reporte</button>
+        <!-- Selección del formato -->
+        <div class="report-type-selection">
+            <label for="formato_reporte">Selecciona el formato de salida:</label>
+            <select name="formato_reporte" id="formato_reporte">
+                <option value="pdf">PDF</option>
+                <option value="excel">Excel</option>
+                <option value="imprimir">Imprimir</option>
+            </select>
+        </div>
+
+        <button class="btn"><i class="fas fa-file-alt"></i> Generar Reporte</button>
+
+        <!-- Resultado del reporte generado -->
+        <div id="report-result" class="report-result"></div>
+
         <br><br>
         <a href="{% url 'jefe_dashboard' %}" class="back-btn"><i class="fas fa-arrow-left"></i> Volver</a>
     </div>
+
+    <script>
+        function cambiarReporte() {
+            var tipoReporte = document.getElementById('tipo_reporte').value;
+            var reportResult = document.getElementById('report-result');
+            reportResult.innerHTML = '';
+
+            if (tipoReporte === 'ventas') {
+                reportResult.innerHTML = `
+                    <div class="report-item">
+                        <h3>Reporte de Ventas</h3>
+                        <p>Ventas totales: $4000.00</p>
+                        <p>Fecha: 12/08/2024</p>
+                    </div>
+                `;
+            } else if (tipoReporte === 'inventario') {
+                reportResult.innerHTML = `
+                    <div class="report-item">
+                        <h3>Reporte de Inventario</h3>
+                        <p>Productos en stock: 150</p>
+                        <p>Productos bajos en stock: 10</p>
+                    </div>
+                `;
+            } else if (tipoReporte === 'empleados') {
+                reportResult.innerHTML = `
+                    <div class="report-item">
+                        <h3>Reporte de Empleados</h3>
+                        <p>Total de empleados: 25</p>
+                        <p>Nuevos empleados: 3</p>
+                    </div>
+                `;
+            }
+        }
+    </script>
 
 </body>
 </html>
