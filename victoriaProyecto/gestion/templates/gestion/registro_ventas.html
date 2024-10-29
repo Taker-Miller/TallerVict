@@ -24,7 +24,7 @@
             padding: 40px;
             border-radius: 10px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-            width: 900px;
+            width: 1000px;
             text-align: center;
         }
 
@@ -43,20 +43,19 @@
         .search-bar input {
             padding: 10px;
             font-size: 16px;
-            width: 40%;
+            width: 50%;
             border: 1px solid #580367;
             border-radius: 5px 0 0 5px;
             outline: none;
         }
 
-        .quantity-bar input {
+        .search-bar select {
             padding: 10px;
             font-size: 16px;
-            width: 15%;
             border: 1px solid #580367;
-            border-radius: 5px 0 0 5px;
+            border-left: none;
             outline: none;
-            margin-left: 10px;
+            width: 20%;
         }
 
         .search-bar button {
@@ -74,28 +73,28 @@
             background-color: #6f0b75;
         }
 
-        .sales-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 20px;
+        table {
+            width: 100%;
+            border-collapse: collapse;
             margin-bottom: 30px;
         }
 
-        .sales-item {
-            background-color: #580367;
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 12px;
             text-align: left;
         }
 
-        .sales-item h3 {
-            margin-bottom: 10px;
-            font-size: 18px;
+        th {
+            background-color: #580367;
+            color: white;
         }
 
-        .sales-item p {
-            font-size: 16px;
+        td {
+            color: #333;
         }
 
         .register-btn, .back-btn {
@@ -114,14 +113,22 @@
         }
 
         .total-item {
-            grid-column: span 5;
             background-color: #6f0b75;
             color: white;
             padding: 20px;
             border-radius: 10px;
             text-align: right;
             font-size: 20px;
+            margin-bottom: 10px;
         }
+
+        .no-results {
+            display: none;
+            color: red;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
     </style>
 </head>
 <body>
@@ -129,34 +136,41 @@
     <div class="sales-container">
         <h1>Registro de Ventas</h1>
 
-        <form class="search-bar">
-            <input type="text" placeholder="Buscar productos..." name="producto">
-            <input type="number" placeholder="Cantidad..." name="cantidad" class="quantity-bar">
+        <div id="noResults" class="no-results">No se encontraron resultados</div>
+
+        <form class="search-bar" onsubmit="filterSales(event)">
+            <input type="text" id="searchInput" placeholder="Buscar..." name="busqueda">
+            <select id="searchOption" onchange="changeInputType()">
+                <option value="mostrar_todo">Mostrar todo</option>
+                <option value="producto">Producto</option>
+                <option value="cantidad">Cantidad</option>
+                <option value="fecha">Fecha</option>
+            </select>
             <button type="submit"><i class="fas fa-search"></i> Buscar</button>
         </form>
 
-        <div class="sales-grid">
-            <div class="sales-item">
-                <h3>Producto</h3>
-                <p>Collar Plata</p>
-            </div>
-            <div class="sales-item">
-                <h3>Precio Unitario</h3>
-                <p>$7,000</p>
-            </div>
-            <div class="sales-item">
-                <h3>Cantidad</h3>
-                <p>4</p>
-            </div>
-            <div class="sales-item">
-                <h3>Subtotal</h3>
-                <p>$28,000</p>
-            </div>
-            <div class="sales-item">
-                <h3>Total</h3>
-                <p>$28,000</p>
-            </div>
-        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Precio Unitario</th>
+                    <th>Cantidad</th>
+                    <th>Subtotal</th>
+                    <th>Total</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody id="salesBody">
+                <tr>
+                    <td>Collar Plata</td>
+                    <td>$7,000</td>
+                    <td>4</td>
+                    <td>$28,000</td>
+                    <td>$28,000</td>
+                    <td>2024-10-28</td>
+                </tr>
+            </tbody>
+        </table>
 
         <div class="total-item">
             Total: $28,000
@@ -165,6 +179,63 @@
         <button class="register-btn">Registrar Venta</button>
         <a href="{% url 'trabajador_dashboard' %}" class="back-btn"><i class="fas fa-arrow-left"></i> Volver</a>
     </div>
+
+    <script>
+        function filterSales(event) {
+            event.preventDefault();
+
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const searchOption = document.getElementById('searchOption').value;
+            const rows = document.querySelectorAll('#salesBody tr');
+            let found = false;
+
+            document.getElementById('noResults').style.display = 'none';
+
+            rows.forEach(row => {
+                const producto = row.children[0].textContent.toLowerCase();
+                const cantidad = row.children[2].textContent.toLowerCase();
+                const fecha = row.children[5].textContent.toLowerCase();
+
+                let fieldToCheck;
+                if (searchOption === "producto") {
+                    fieldToCheck = producto;
+                } else if (searchOption === "cantidad") {
+                    fieldToCheck = cantidad;
+                } else if (searchOption === "fecha") {
+                    fieldToCheck = fecha;
+                }
+
+                if (searchOption === "mostrar_todo") {
+                    row.style.display = '';
+                    found = true;
+                } else if (fieldToCheck.includes(searchInput)) {
+                    row.style.display = '';
+                    found = true;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            if (!found && searchOption !== 'mostrar_todo') {
+                document.getElementById('noResults').style.display = 'block';
+            }
+        }
+
+        function changeInputType() {
+            const searchInput = document.getElementById('searchInput');
+            const searchOption = document.getElementById('searchOption').value;
+
+            if (searchOption === 'fecha') {
+                searchInput.type = 'date';
+            } else if (searchOption === 'cantidad') {
+                searchInput.type = 'number';
+                searchInput.placeholder = 'Buscar cantidad...';
+            } else {
+                searchInput.type = 'text';
+                searchInput.placeholder = 'Buscar...';
+            }
+        }
+    </script>
 
 </body>
 </html>
