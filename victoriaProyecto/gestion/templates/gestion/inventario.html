@@ -43,9 +43,17 @@
         .search-bar input {
             padding: 10px;
             font-size: 16px;
-            width: 60%;
+            width: 50%;
             border: 1px solid #580367;
             border-radius: 5px 0 0 5px;
+            outline: none;
+        }
+
+        .search-bar select {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #580367;
+            border-left: none;
             outline: none;
         }
 
@@ -64,28 +72,32 @@
             background-color: #6f0b75;
         }
 
-        .inventory-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
+        .error-message {
+            color: red;
+            font-size: 14px;
+            margin-bottom: 10px;
+            display: none; /* Oculto inicialmente */
+        }
+
+        .inventory-table {
+            width: 100%;
+            border-collapse: collapse;
             margin-bottom: 30px;
         }
 
-        .inventory-item {
-            background-color: #580367;
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
+        .inventory-table th, .inventory-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
             text-align: left;
         }
 
-        .inventory-item h3 {
-            margin-bottom: 10px;
-            font-size: 18px;
+        .inventory-table th {
+            background-color: #580367;
+            color: white;
         }
 
-        .inventory-item p {
-            font-size: 16px;
+        .inventory-table td {
+            color: #333;
         }
 
         .back-btn {
@@ -109,32 +121,90 @@
     <div class="inventory-container">
         <h1>Inventario Actual</h1>
 
+        <div class="error-message" id="errorMessage">Entrada no válida para el campo seleccionado. Por favor, inténtalo de nuevo.</div>
+
         <div class="search-bar">
-            <input type="text" placeholder="Buscar productos...">
-            <button><i class="fas fa-search"></i> Buscar</button>
+            <input type="text" id="search" placeholder="Buscar...">
+            <select id="filterOption">
+                <option value="all">Mostrar todo</option>
+                <option value="producto">Producto</option>
+                <option value="precio">Precio</option>
+                <option value="stock">Stock</option>
+            </select>
+            <button onclick="filterInventory()"><i class="fas fa-search"></i> Buscar</button>
         </div>
 
-        <div class="inventory-grid">
-            <div class="inventory-item">
-                <h3>Producto</h3>
-                <p>Collar</p>
-                <p>Pulsera Plata</p>
-            </div>
-            <div class="inventory-item">
-                <h3>Precio</h3>
-                <p>$5,500</p>
-                <p>$10,000</p>
-            </div>
-            <div class="inventory-item">
-                <h3>Stock</h3>
-                <p>3</p>
-                <p>2</p>
-            </div>
-        </div>
+        <table class="inventory-table">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                </tr>
+            </thead>
+            <tbody id="inventoryBody">
+                <tr data-producto="Collar" data-precio="5500" data-stock="3">
+                    <td>Collar</td>
+                    <td>$5,500</td>
+                    <td>3</td>
+                </tr>
+                <tr data-producto="Pulsera Plata" data-precio="10000" data-stock="2">
+                    <td>Pulsera Plata</td>
+                    <td>$10,000</td>
+                    <td>2</td>
+                </tr>
+            </tbody>
+        </table>
 
         <a href="{% url 'trabajador_dashboard' %}" class="back-btn"><i class="fas fa-arrow-left"></i> Volver</a>
 
     </div>
+
+    <script>
+        function filterInventory() {
+            const searchQuery = document.getElementById('search').value.toLowerCase();
+            const filterOption = document.getElementById('filterOption').value;
+            const rows = document.querySelectorAll('#inventoryBody tr');
+            let matchFound = false;
+            
+            document.getElementById('errorMessage').style.display = 'none';  // Ocultar el mensaje de error antes de comenzar
+
+            rows.forEach(row => {
+                const producto = row.getAttribute('data-producto').toLowerCase();
+                const precio = row.getAttribute('data-precio').toLowerCase();
+                const stock = row.getAttribute('data-stock').toLowerCase();
+
+                // Mostrar todo sin aplicar filtros
+                if (filterOption === "all") {
+                    row.style.display = '';
+                    matchFound = true; // No hay necesidad de mostrar error
+                    return;
+                }
+
+                let field;
+                if (filterOption === "producto") {
+                    field = producto;
+                } else if (filterOption === "precio") {
+                    field = precio;
+                } else if (filterOption === "stock") {
+                    field = stock;
+                }
+
+                // Mostrar u ocultar filas según el filtro seleccionado
+                if (field.includes(searchQuery)) {
+                    row.style.display = '';
+                    matchFound = true;  // Se encontró al menos una coincidencia
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Mostrar el mensaje de error si no se encontró ninguna coincidencia
+            if (!matchFound && searchQuery) {
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+        }
+    </script>
 
 </body>
 </html>
