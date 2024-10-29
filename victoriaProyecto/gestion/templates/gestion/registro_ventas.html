@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Registro de Ventas</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
     <style>
         body {
@@ -97,7 +97,18 @@
             color: #333;
         }
 
-        .register-btn, .back-btn {
+        .register-btn {
+            padding: 10px 20px;
+            background-color: #1f8b4c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 10px;
+        }
+
+        .back-btn {
             padding: 10px 20px;
             background-color: #d9534f;
             color: white;
@@ -108,7 +119,11 @@
             margin: 10px;
         }
 
-        .register-btn:hover, .back-btn:hover {
+        .register-btn:hover {
+            background-color: #16673c;
+        }
+
+        .back-btn:hover {
             background-color: #c9302c;
         }
 
@@ -119,7 +134,11 @@
             border-radius: 10px;
             text-align: right;
             font-size: 20px;
-            margin-bottom: 10px;
+            margin-bottom: 30px;
+        }
+
+        .button-container {
+            margin-top: 20px;
         }
 
         .no-results {
@@ -128,7 +147,6 @@
             font-size: 16px;
             margin-bottom: 20px;
         }
-
     </style>
 </head>
 <body>
@@ -149,6 +167,7 @@
             <button type="submit"><i class="fas fa-search"></i> Buscar</button>
         </form>
 
+        <!-- Ventas del día -->
         <table>
             <thead>
                 <tr>
@@ -161,23 +180,32 @@
                 </tr>
             </thead>
             <tbody id="salesBody">
-                <tr>
-                    <td>Collar Plata</td>
-                    <td>$7,000</td>
-                    <td>4</td>
-                    <td>$28,000</td>
-                    <td>$28,000</td>
-                    <td>2024-10-28</td>
-                </tr>
+                {% for venta_fecha, ventas in ventas_por_fecha.items %}
+                    <tr>
+                        <td colspan="6" style="text-align: center; font-weight: bold;">Ventas del {{ venta_fecha }}</td>
+                    </tr>
+                    {% for venta in ventas %}
+                    <tr>
+                        <td>{{ venta.producto.nombre }}</td>
+                        <td>${{ venta.producto.precio }}</td>
+                        <td>{{ venta.cantidad }}</td>
+                        <td>${{ venta.cantidad|floatformat:0|add:venta.producto.precio|floatformat:0 }}</td>
+                        <td>${{ venta.total }}</td>
+                        <td>{{ venta.fecha|date:"d-m-Y" }}</td>
+                    </tr>
+                    {% endfor %}
+                {% endfor %}
             </tbody>
         </table>
 
         <div class="total-item">
-            Total: $28,000
+            Total del día: ${{ total_dia|dictsort:"0"|join:"" }} <!-- Display total for each date -->
         </div>
 
-        <button class="register-btn">Registrar Venta</button>
-        <a href="{% url 'trabajador_dashboard' %}" class="back-btn"><i class="fas fa-arrow-left"></i> Volver</a>
+        <div class="button-container">
+            <a href="{% url 'anadir_venta' %}" class="register-btn">Registrar Venta</a>
+            <a href="{% url 'trabajador_dashboard' %}" class="back-btn"><i class="fas fa-arrow-left"></i> Volver</a>
+        </div>
     </div>
 
     <script>
@@ -192,9 +220,9 @@
             document.getElementById('noResults').style.display = 'none';
 
             rows.forEach(row => {
-                const producto = row.children[0].textContent.toLowerCase();
-                const cantidad = row.children[2].textContent.toLowerCase();
-                const fecha = row.children[5].textContent.toLowerCase();
+                const producto = row.children[0]?.textContent.toLowerCase();
+                const cantidad = row.children[2]?.textContent.toLowerCase();
+                const fecha = row.children[5]?.textContent.toLowerCase();
 
                 let fieldToCheck;
                 if (searchOption === "producto") {
@@ -208,7 +236,7 @@
                 if (searchOption === "mostrar_todo") {
                     row.style.display = '';
                     found = true;
-                } else if (fieldToCheck.includes(searchInput)) {
+                } else if (fieldToCheck?.includes(searchInput)) {
                     row.style.display = '';
                     found = true;
                 } else {

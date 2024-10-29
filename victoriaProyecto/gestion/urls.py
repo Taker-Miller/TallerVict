@@ -8,6 +8,9 @@ urlpatterns = [
     path('productos/<int:pk>/editar/', views.editar_producto, name='editar_producto'),
     path('productos/<int:pk>/eliminar/', views.eliminar_producto, name='eliminar_producto'),
 
+    path('anadir_venta/', views.anadir_venta, name='anadir_venta'),
+    path('registro_ventas/', views.registro_ventas, name='registro_ventas'),
+
 
     
     # Inventario
@@ -17,6 +20,8 @@ urlpatterns = [
     # Registro de Ventas
     path('registro_ventas/', views.registro_ventas_view, name='registro_ventas'),
     path('registrar_venta/', views.registrar_venta, name='registrar_venta'),
+
+    path('productos/', views.lista_productos, name='lista_productos'),
 
     # Reportes
     path('reportes/', views.generar_reportes_view, name='generar_reportes'),
