@@ -204,7 +204,7 @@
                     row.style.display = 'none';
                 }
 
-                // Comprobar el stock mínimo
+                // Comprobar el stock mínimo y mostrar una ventana emergente
                 const stockValue = parseInt(row.getAttribute('data-stock'));
                 const stockMinimo = 5; // Define el nivel de stock mínimo
                 if (stockValue < stockMinimo) {
