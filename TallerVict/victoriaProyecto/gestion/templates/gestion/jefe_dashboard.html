@@ -18,7 +18,6 @@
             align-items: center;
         }
 
-        /* Título con animación */
         .title {
             font-size: 32px;
             font-weight: 700;
@@ -39,7 +38,6 @@
             }
         }
 
-        /* Imagen del logo */
         .logo {
             width: 150px;
             margin-top: 20px;
@@ -60,35 +58,77 @@
         .dashboard-container h1 {
             font-size: 28px;
             color: #580367;
+            margin-bottom: 20px;
+        }
+
+        .description {
+            font-size: 16px;
+            color: #333;
             margin-bottom: 30px;
+            line-height: 1.5;
         }
 
-        nav {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-        }
-
-        nav a {
+        .menu-dropdown {
+            position: relative;
             display: inline-block;
-            padding: 15px 25px;
+        }
+
+        .menu-button {
             background-color: #580367;
             color: white;
-            text-decoration: none;
+            border: none;
             border-radius: 30px;
-            transition: all 0.3s ease;
+            padding: 10px 20px;
+            cursor: pointer;
             font-size: 16px;
-            text-align: center;
+            transition: background-color 0.3s;
         }
 
-        nav a:hover {
+        .menu-button:hover {
             background-color: #6f0b75;
-            transform: translateY(-3px);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-content {
+            display: none;
+            position: absolute;
+            background-color: #fff;
+            min-width: 160px;
+            z-index: 1;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            margin-left: -10px; /* Ajusta la posición horizontal */
+            opacity: 0;
+            transform: translateX(-20px); /* Comienza desplazado a la izquierda */
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .menu-content a {
+            color: #580367;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.3s;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .menu-content a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .menu-dropdown:hover .menu-content {
+            display: block;
+            transform: translateX(0); /* Se desplaza a la posición original */
+            opacity: 1; /* Aumenta la opacidad */
         }
 
         .logout-btn {
             background-color: #d9534f;
+            color: white;
+            border-radius: 30px;
+            padding: 10px 20px;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.3s;
         }
 
         .logout-btn:hover {
@@ -99,35 +139,48 @@
             .dashboard-container {
                 width: 90%;
             }
-
-            nav a {
-                width: 100%;
-                padding: 10px 0;
+            .menu-content {
+                min-width: 100%; /* Asegura que el menú despliegue en dispositivos pequeños */
             }
         }
     </style>
 </head>
 <body>
+    {% load static %}
 
-    {% load static %} <!-- Carga los archivos estáticos aquí -->
-
-    <!-- Título del proyecto con animación -->
     <div class="title">Victoria Bisutería y Accesorios</div>
-
-    <!-- Imagen del logo -->
     <img src="{% static 'images/logo.jpg' %}" alt="Logo de Victoria Bisutería y Accesorios" class="logo">
 
-    <!-- Panel de jefe -->
     <div class="dashboard-container">
         <h1>Bienvenido al Panel de Jefe</h1>
-        <nav>
-            <a href="{% url 'inventario_jefe' %}"><i class="fas fa-boxes"></i> Inventario</a>
-            <a href="{% url 'ventas_jefe' %}"><i class="fas fa-chart-line"></i> Ventas</a> <!-- Enlace actualizado -->
-            <a href="{% url 'generar_reportes' %}"><i class="fas fa-file-alt"></i> Reportes</a>
-            <a href="{% url 'gestion_empleados' %}"><i class="fas fa-users"></i> Usuarios</a>
-            <a href="{% url 'logout' %}" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
-        </nav>
+        <p class="description">En este panel, podrás supervisar el inventario, gestionar ventas y generar reportes, además de administrar a los empleados. Utiliza el menú a continuación para navegar entre las diferentes opciones disponibles.</p>
+        
+        <div class="menu-dropdown">
+            <button class="menu-button"><i class="fas fa-bars"></i> Opciones</button>
+            <div class="menu-content">
+                <a href="{% url 'inventario_jefe' %}"><i class="fas fa-boxes"></i> Inventario</a>
+                <a href="{% url 'ventas_jefe' %}"><i class="fas fa-chart-line"></i> Ventas</a>
+                <a href="{% url 'generar_reportes' %}"><i class="fas fa-file-alt"></i> Reportes</a>
+                <a href="{% url 'gestion_empleados' %}"><i class="fas fa-users"></i> Usuarios</a>
+                <a href="{% url 'logout' %}" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
+            </div>
+        </div>
     </div>
+
+    <script>
+        // Cierre de sesión automático después de 30 minutos de inactividad
+        let timeout;
+        function resetTimer() {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                window.location.href = "{% url 'logout' %}";
+            }, 1800000);  // 30 minutos en milisegundos
+        }
+
+        window.onload = resetTimer;
+        document.onmousemove = resetTimer;
+        document.onkeypress = resetTimer;
+    </script>
 
 </body>
 </html>

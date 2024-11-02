@@ -145,5 +145,19 @@
 
     <a href="{% url 'gestion_empleados' %}" class="back-btn"><i class="fas fa-arrow-left"></i> Volver</a>
 
+    <script>
+        // Cierre de sesión automático después de 30 minutos de inactividad
+        let timeout;
+        function resetTimer() {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                window.location.href = "{% url 'logout' %}";
+            }, 1800000);  // 30 minutos en milisegundos
+        }
+
+        window.onload = resetTimer;
+        document.onmousemove = resetTimer;
+        document.onkeypress = resetTimer;
+    </script>
 </body>
 </html>

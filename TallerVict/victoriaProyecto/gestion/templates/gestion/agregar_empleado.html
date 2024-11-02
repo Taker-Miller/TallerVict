@@ -82,6 +82,25 @@
         }
     </style>
     <script>
+        // Función para redirigir al usuario después de 10 segundos de inactividad
+        let timeout;
+
+        function resetTimer() {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                window.location.href = "{% url 'logout' %}";  // URL de cierre de sesión
+            }, 10000); // 10 segundos en milisegundos
+        }
+
+        // Escucha de eventos de usuario para reiniciar el temporizador
+        document.addEventListener('mousemove', resetTimer);
+        document.addEventListener('keydown', resetTimer);
+        document.addEventListener('click', resetTimer);
+        document.addEventListener('scroll', resetTimer);
+
+        // Inicializar el temporizador en cuanto la página se carga
+        window.onload = resetTimer;
+
         function toggleCodigoField() {
             const rolSelect = document.getElementById("rol");
             const codigoContainer = document.getElementById("codigo-container");
@@ -107,7 +126,7 @@
 <body>
     <h1>Agregar Nuevo Empleado</h1>
 
-    <form method="POST" enctype="multipart/form-data" onsubmit="validarFormulario(evento)">
+    <form method="POST" enctype="multipart/form-data" onsubmit="validarFormulario(event)">
         {% csrf_token %}
         <label for="nombre">Nombre:</label>
         <input type="text" id="nombre" name="nombre" placeholder="Ingresa el nombre del empleado" required>

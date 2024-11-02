@@ -76,7 +76,7 @@
             color: red;
             font-size: 14px;
             margin-bottom: 10px;
-            display: none; /* Oculto inicialmente */
+            display: none;
         }
 
         .inventory-table {
@@ -113,31 +113,6 @@
         .back-btn:hover {
             background-color: #c9302c;
         }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 30px;
-        }
-
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #580367;
-            color: white;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f4f4f9;
-        }
-
     </style>
 </head>
 <body>
@@ -148,7 +123,7 @@
         <div class="error-message" id="errorMessage">Entrada no válida para el campo seleccionado. Por favor, inténtalo de nuevo.</div>
 
         <div class="search-bar">
-            <form method="get" action="{% url 'inventario' %}">
+            <form method="get" action="{% url 'inventario' %}" onsubmit="return filterInventory(event)">
                 <input type="text" id="search" placeholder="Buscar...">
                 <select id="filterOption">
                     <option value="all">Mostrar todo</option>
@@ -156,12 +131,12 @@
                     <option value="precio">Precio</option>
                     <option value="stock">Stock</option>
                 </select>
+                <button type="submit"><i class="fas fa-search"></i> Buscar</button>
             </form>
-            <button onclick="filterInventory()"><i class="fas fa-search"></i> Buscar</button>
         </div>
 
         <!-- Tabla de productos -->
-        <table>
+        <table class="inventory-table">
             <thead>
                 <tr>
                     <th>Imagen</th>
@@ -170,9 +145,9 @@
                     <th>Stock</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="inventoryBody">
                 {% for producto in productos %}
-                <tr>
+                <tr data-producto="{{ producto.nombre }}" data-precio="{{ producto.precio }}" data-stock="{{ producto.stock }}">
                     <td>
                         {% if producto.imagen %}
                             <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" width="100">
@@ -191,23 +166,25 @@
     </div>
 
     <script>
-        function filterInventory() {
+        function filterInventory(event) {
+            event.preventDefault(); // Prevenir el envío del formulario
+
             const searchQuery = document.getElementById('search').value.toLowerCase();
             const filterOption = document.getElementById('filterOption').value;
             const rows = document.querySelectorAll('#inventoryBody tr');
             let matchFound = false;
-            
-            document.getElementById('errorMessage').style.display = 'none';  // Ocultar el mensaje de error antes de comenzar
+
+            // Ocultar mensaje de error inicialmente
+            document.getElementById('errorMessage').style.display = 'none';
 
             rows.forEach(row => {
                 const producto = row.getAttribute('data-producto').toLowerCase();
                 const precio = row.getAttribute('data-precio').toLowerCase();
                 const stock = row.getAttribute('data-stock').toLowerCase();
 
-                // Mostrar todo sin aplicar filtros
                 if (filterOption === "all") {
                     row.style.display = '';
-                    matchFound = true; // No hay necesidad de mostrar error
+                    matchFound = true;
                     return;
                 }
 
@@ -220,20 +197,41 @@
                     field = stock;
                 }
 
-                // Mostrar u ocultar filas según el filtro seleccionado
                 if (field.includes(searchQuery)) {
                     row.style.display = '';
-                    matchFound = true;  // Se encontró al menos una coincidencia
+                    matchFound = true;
                 } else {
                     row.style.display = 'none';
                 }
+
+                // Comprobar el stock mínimo
+                const stockValue = parseInt(row.getAttribute('data-stock'));
+                const stockMinimo = 5; // Define el nivel de stock mínimo
+                if (stockValue < stockMinimo) {
+                    alert(`¡Atención! El stock de "${producto}" está por debajo del mínimo (${stockMinimo}).`);
+                }
             });
 
-            // Mostrar el mensaje de error si no se encontró ninguna coincidencia
+            // Si no se encuentra ningún resultado
             if (!matchFound && searchQuery) {
                 document.getElementById('errorMessage').style.display = 'block';
             }
         }
+
+        // Cerrar sesión automáticamente después de 30 minutos de inactividad
+        let timeout;
+        function resetTimer() {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                alert('Has estado inactivo por 30 minutos. Se cerrará la sesión.');
+                window.location.href = "{% url 'logout' %}";  // Redirige al usuario al cerrar sesión
+            }, 1800000);  // 1800000ms = 30 minutos
+        }
+        
+        // Reiniciar el temporizador en eventos de interacción del usuario
+        window.onload = resetTimer;
+        document.onmousemove = resetTimer;
+        document.onkeypress = resetTimer;
     </script>
 
 </body>

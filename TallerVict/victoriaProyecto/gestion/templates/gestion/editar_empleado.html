@@ -4,17 +4,117 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Empleado</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .edit-container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+        }
+
+        .edit-container h1 {
+            font-size: 24px;
+            color: #580367;
+            margin-bottom: 20px;
+        }
+
+        .edit-form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .edit-form label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #580367;
+            text-align: left;
+        }
+
+        .edit-form input {
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #580367;
+            border-radius: 5px;
+            outline: none;
+            font-size: 16px;
+        }
+
+        .edit-form button {
+            padding: 10px 20px;
+            background-color: #580367;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        .edit-form button:hover {
+            background-color: #6f0b75;
+        }
+
+        .back-btn {
+            padding: 10px 20px;
+            background-color: #d9534f;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 15px;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background-color: #c9302c;
+        }
+    </style>
 </head>
 <body>
-    <h1>Editar Empleado</h1>
-    <form method="POST">
-        {% csrf_token %}
-        <label for="nombre">Nombre:</label>
-        <input type="text" name="nombre" value="{{ empleado.nombre }}" required><br>
-        <label for="rol">Rol:</label>
-        <input type="text" name="rol" value="{{ empleado.rol }}" required><br>
-        <button type="submit">Guardar Cambios</button>
-    </form>
-    <a href="{% url 'lista_empleados' %}">Volver a la lista de empleados</a>
+
+    <!-- Script para cerrar la sesión automáticamente tras 30 minutos de inactividad -->
+    <script>
+        let timeout;
+        function resetTimer() {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                window.location.href = "{% url 'logout' %}";
+            }, 1800000);  // 30 minutos en milisegundos
+        }
+
+        window.onload = resetTimer;
+        document.onmousemove = resetTimer;
+        document.onkeypress = resetTimer;
+    </script>
+
+    <div class="edit-container">
+        <h1>Editar Empleado</h1>
+        <form method="POST" class="edit-form">
+            {% csrf_token %}
+            <label for="nombre">Nombre:</label>
+            <input type="text" name="nombre" value="{{ empleado.nombre }}" required>
+
+            <label for="rol">Rol:</label>
+            <input type="text" name="rol" value="{{ empleado.rol }}" required>
+
+            <button type="submit">Guardar Cambios</button>
+        </form>
+
+        <a href="{% url 'lista_empleados' %}" class="back-btn">Volver a la lista de empleados</a>
+    </div>
 </body>
 </html>

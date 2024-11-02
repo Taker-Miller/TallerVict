@@ -105,15 +105,14 @@
         }
 
         textarea {
-        width: 80%; /* Ajusta al ancho del contenedor */
-        resize: none; /* Desactiva la redimensión */
-        padding: 10px;
-        border: 1px solid #580367;
-        border-radius: 5px;
-        font-size: 16px;
-        font-family: 'Nunito', sans-serif;
+            width: 80%;
+            resize: none;
+            padding: 10px;
+            border: 1px solid #580367;
+            border-radius: 5px;
+            font-size: 16px;
+            font-family: 'Nunito', sans-serif;
         }
-
     </style>
 </head>
 <body>
@@ -161,8 +160,8 @@
 
     <script>
         function cambiarReporte() {
-            var tipoReporte = document.getElementById('tipo_reporte').value;
-            var reportResult = document.getElementById('report-result');
+            const tipoReporte = document.getElementById('tipo_reporte').value;
+            const reportResult = document.getElementById('report-result');
             reportResult.innerHTML = '';
 
             if (tipoReporte === 'ventas') {
@@ -191,6 +190,19 @@
                 `;
             }
         }
+
+        // Cierre de sesión automático después de 30 minutos de inactividad
+        let timeout;
+        function resetTimer() {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                window.location.href = "{% url 'logout' %}";
+            }, 1800000);  // 30 minutos en milisegundos
+        }
+
+        window.onload = resetTimer;
+        document.onmousemove = resetTimer;
+        document.onkeypress = resetTimer;
     </script>
 
 </body>

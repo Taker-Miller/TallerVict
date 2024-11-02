@@ -80,6 +80,21 @@
 </head>
 <body>
 
+    <!-- Script para cierre de sesión automático tras 30 minutos de inactividad -->
+    <script>
+        let timeout;
+        function resetTimer() {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                window.location.href = "{% url 'logout' %}";
+            }, 1800000);  // 30 minutos en milisegundos
+        }
+
+        window.onload = resetTimer;
+        document.onmousemove = resetTimer;
+        document.onkeypress = resetTimer;
+    </script>
+
     <div class="confirmation-container">
         <!-- Imagen de advertencia -->
         <img src="https://cdn-icons-png.flaticon.com/512/1828/1828843.png" alt="Alerta de eliminación" class="alert-img">

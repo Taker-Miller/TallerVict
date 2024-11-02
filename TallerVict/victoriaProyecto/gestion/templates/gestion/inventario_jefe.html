@@ -136,50 +136,9 @@
             background-color: #c9302c;
         }
 
-        .alert {
-            padding: 15px;
-            margin-bottom: 20px;
-            border: 1px solid transparent;
-            border-radius: 4px;
-            text-align: center;
-        }
-
-        .alert-success {
-            color: #3c763d;
-            background-color: #dff0d8;
-            border-color: #d6e9c6;
-        }
-
-        .alert-error {
-            color: #a94442;
-            background-color: #f2dede;
-            border-color: #ebccd1;
-        }
-
     </style>
 </head>
 <body>
-
-    <!-- Script para ocultar los mensajes después de 5 segundos -->
-    <script>
-        setTimeout(function() {
-            let messages = document.querySelector('.messages');
-            if (messages) {
-                messages.style.display = 'none';
-            }
-        }, 5000);  // 5 segundos
-    </script>
-
-    <!-- Bloque para mostrar los mensajes de Django -->
-    {% if messages %}
-    <div class="messages">
-        {% for message in messages %}
-        <div class="alert {{ message.tags }}">
-            {{ message }}
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
 
     <div class="inventory-container">
         <h1>Inventario Actual - Jefe</h1>
@@ -204,7 +163,7 @@
             </thead>
             <tbody>
                 {% for producto in productos %}
-                <tr>
+                <tr data-producto="{{ producto.nombre }}" data-precio="{{ producto.precio }}" data-stock="{{ producto.stock }}">
                     <td>
                         {% if producto.imagen %}
                             <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" width="100">
@@ -226,6 +185,31 @@
         <a href="{% url 'agregar_producto' %}" class="add-btn"><i class="fas fa-plus"></i> Añadir Producto</a>
         <a href="{% url 'jefe_dashboard' %}" class="back-btn"><i class="fas fa-arrow-left"></i> Volver</a>
     </div>
+
+    <script>
+        // Verifica el stock de los productos y muestra una alerta si está por debajo de un mínimo
+        document.querySelectorAll('tr[data-stock]').forEach(row => {
+            const stockValue = parseInt(row.getAttribute('data-stock'));
+            const stockMinimo = 5; // Define el nivel de stock mínimo
+            if (stockValue < stockMinimo) {
+                alert(`¡Atención! El stock de "${row.getAttribute('data-producto')}" está por debajo del mínimo (${stockMinimo}).`);
+            }
+        });
+
+        // Cierre de sesión automático después de 30 minutos de inactividad
+        let timeout;
+        function resetTimer() {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                window.location.href = "{% url 'logout' %}";  // Redirige al usuario al cerrar sesión
+            }, 1800000);  // 1800000ms = 30 minutos
+        }
+        
+        // Reiniciar el temporizador en eventos de interacción del usuario
+        window.onload = resetTimer;
+        document.onmousemove = resetTimer;
+        document.onkeypress = resetTimer;
+    </script>
 
 </body>
 </html>

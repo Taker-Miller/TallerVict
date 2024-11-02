@@ -88,6 +88,22 @@
     </style>
 </head>
 <body>
+
+    <!-- Script para cerrar la sesión automáticamente tras 30 minutos de inactividad -->
+    <script>
+        let timeout;
+        function resetTimer() {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                window.location.href = "{% url 'logout' %}";
+            }, 1800000);  // 30 minutos en milisegundos
+        }
+
+        window.onload = resetTimer;
+        document.onmousemove = resetTimer;
+        document.onkeypress = resetTimer;
+    </script>
+
     <div class="edit-container">
         <h1>Editar Producto: {{ producto.nombre }}</h1>
         

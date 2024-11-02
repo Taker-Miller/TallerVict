@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Panel de Trabajador</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
@@ -19,10 +18,10 @@
         }
 
         .title {
-            font-size: 32px;
+            font-size: 36px;
             font-weight: 700;
             color: #580367;
-            margin-top: 40px; /* Ajustar la posición superior del título */
+            margin-top: 40px;
             opacity: 0;
             animation: fadeIn 2s ease-in-out forwards;
         }
@@ -45,35 +44,79 @@
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
             width: 600px;
             text-align: center;
-            margin-top: 50px; /* Ajustar la separación del título al contenido */
+            margin-top: 50px;
         }
 
         .dashboard-container h1 {
             font-size: 28px;
             color: #580367;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+            font-weight: 600;
         }
 
-        nav a {
+        .description {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .menu-dropdown {
+            position: relative;
             display: inline-block;
-            margin: 10px;
-            padding: 15px 25px;
+        }
+
+        .menu-button {
             background-color: #580367;
             color: white;
-            text-decoration: none;
+            border: none;
             border-radius: 30px;
-            transition: all 0.3s ease;
+            padding: 10px 20px;
+            cursor: pointer;
             font-size: 16px;
+            transition: background-color 0.3s;
         }
 
-        nav a:hover {
+        .menu-button:hover {
             background-color: #6f0b75;
-            transform: translateY(-3px);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
+        .menu-content {
+            display: none;
+            position: absolute;
+            background-color: #fff;
+            min-width: 160px;
+            z-index: 1;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        .menu-content a {
+            color: #580367;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.3s;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .menu-content a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .menu-dropdown:hover .menu-content {
+            display: block;
+        }
+
+        /* Estilo para el botón de cierre de sesión */
         .logout-btn {
             background-color: #d9534f;
+            color: white;
+            border-radius: 30px;
+            padding: 10px 20px;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.3s;
         }
 
         .logout-btn:hover {
@@ -84,26 +127,47 @@
             .dashboard-container {
                 width: 90%;
             }
-
-            nav a {
-                width: 100%;
-                padding: 10px 0;
+            .menu-content {
+                min-width: 100%; /* Asegura que el menú despliegue en dispositivos pequeños */
             }
         }
     </style>
+    <script>
+        // Función para redirigir al usuario después de 10 segundos de inactividad
+        let timeout;
+
+        function resetTimer() {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                window.location.href = "{% url 'logout' %}";  // URL de cierre de sesión
+            }, 10000); // 10 segundos en milisegundos
+        }
+
+        // Escucha de eventos de usuario para reiniciar el temporizador
+        document.addEventListener('mousemove', resetTimer);
+        document.addEventListener('keydown', resetTimer);
+        document.addEventListener('click', resetTimer);
+        document.addEventListener('scroll', resetTimer);
+
+        // Inicializar el temporizador en cuanto la página se carga
+        window.onload = resetTimer;
+    </script>
 </head>
 <body>
-    <!-- Título del proyecto con animación -->
     <div class="title">Victoria Bisutería y Accesorios</div>
 
-    <!-- Panel de trabajador -->
     <div class="dashboard-container">
         <h1>Bienvenido al Panel de Trabajador</h1>
-        <nav>
-            <a href="{% url 'inventario' %}"><i class="fas fa-boxes"></i> Inventario</a> 
-            <a href="{% url 'registro_ventas' %}"><i class="fas fa-dollar-sign"></i> Registrar Ventas</a>
-            <a href="{% url 'logout' %}" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
-        </nav>
+        <p class="description">En este panel, podrás gestionar el inventario de productos, registrar ventas y acceder a otras funcionalidades importantes para optimizar el funcionamiento de nuestra tienda. Usa el menú a continuación para navegar entre las diferentes opciones disponibles.</p>
+        
+        <div class="menu-dropdown">
+            <button class="menu-button"><i class="fas fa-bars"></i> Opciones</button>
+            <div class="menu-content">
+                <a href="{% url 'inventario' %}"><i class="fas fa-boxes"></i> Inventario</a>
+                <a href="{% url 'registro_ventas' %}"><i class="fas fa-dollar-sign"></i> Registrar Ventas</a>
+                <a href="{% url 'logout' %}" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a>
+            </div>
+        </div>
     </div>
 </body>
 </html>

@@ -57,6 +57,22 @@
     </style>
 </head>
 <body>
+
+    <!-- Script para cerrar sesión automáticamente después de 30 minutos de inactividad -->
+    <script>
+        let timeout;
+        function resetTimer() {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                window.location.href = "{% url 'logout' %}";
+            }, 1800000);  // 30 minutos en milisegundos
+        }
+
+        window.onload = resetTimer;
+        document.onmousemove = resetTimer;
+        document.onkeypress = resetTimer;
+    </script>
+
     <div class="dashboard-container">
         <h1>Gestión de Empleados</h1>
         <nav>

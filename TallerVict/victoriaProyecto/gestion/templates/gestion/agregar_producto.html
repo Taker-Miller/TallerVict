@@ -74,6 +74,26 @@
             background-color: #c9302c;
         }
     </style>
+    <script>
+        // Función para redirigir al usuario después de 10 segundos de inactividad
+        let timeout;
+
+        function resetTimer() {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                window.location.href = "{% url 'logout' %}";  // URL de cierre de sesión
+            }, 10000); // 10 segundos en milisegundos
+        }
+
+        // Escucha de eventos de usuario para reiniciar el temporizador
+        document.addEventListener('mousemove', resetTimer);
+        document.addEventListener('keydown', resetTimer);
+        document.addEventListener('click', resetTimer);
+        document.addEventListener('scroll', resetTimer);
+
+        // Inicializar el temporizador en cuanto la página se carga
+        window.onload = resetTimer;
+    </script>
 </head>
 <body>
     <div class="form-container">
