@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar Empleado</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            color: #580367;
+            margin-bottom: 30px;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #580367;
+        }
+
+        input[type="text"],
+        input[type="file"],
+        select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            outline: none;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #580367;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #6f0b75;
+        }
+
+        a {
+            text-decoration: none;
+            padding: 10px 20px;
+            background-color: #d9534f;
+            color: white;
+            border-radius: 5px;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+
+        a:hover {
+            background-color: #c9302c;
+        }
+
+        #codigo-container {
+            display: none;
+        }
+    </style>
+    <script>
+        function toggleCodigoField() {
+            const rolSelect = document.getElementById("rol");
+            const codigoContainer = document.getElementById("codigo-container");
+
+            if (rolSelect.value === "Jefe") {
+                codigoContainer.style.display = "block";
+            } else {
+                codigoContainer.style.display = "none";
+            }
+        }
+
+        function validarFormulario(evento) {
+            const rolSelect = document.getElementById("rol").value;
+            const codigoInput = document.getElementById("codigo").value;
+
+            if (rolSelect === "Jefe" && codigoInput !== "123") {
+                alert("Código incorrecto. Por favor, ingresa el código correcto para asignar el rol de Jefe.");
+                evento.preventDefault();
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Agregar Nuevo Empleado</h1>
+
+    <form method="POST" enctype="multipart/form-data" onsubmit="validarFormulario(evento)">
+        {% csrf_token %}
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" placeholder="Ingresa el nombre del empleado" required>
+
+        <label for="rol">Rol:</label>
+        <select name="rol" id="rol" onchange="toggleCodigoField()" required>
+            <option value="Empleado">Empleado</option>
+            <option value="Jefe">Jefe</option>
+        </select>
+
+        <div id="codigo-container">
+            <label for="codigo">Código de Autorización:</label>
+            <input type="text" id="codigo" name="codigo" placeholder="Ingrese el código">
+        </div>
+
+        <label for="imagen">Imagen del Empleado:</label>
+        <input type="file" id="imagen" name="imagen">
+
+        <button type="submit">Agregar</button>
+    </form>
+
+    <a href="{% url 'lista_empleados' %}"><i class="fas fa-arrow-left"></i> Volver a la lista de empleados</a>
+</body>
+</html>

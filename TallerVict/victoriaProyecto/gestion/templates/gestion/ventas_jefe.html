@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Ventas del Jefe</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .sales-container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            width: 800px;
+            text-align: center;
+        }
+
+        .sales-container h1 {
+            font-size: 28px;
+            color: #580367;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #580367;
+            color: white;
+        }
+
+        .date-header {
+            background-color: #580367;
+            color: white;
+            font-weight: bold;
+            padding: 10px;
+        }
+
+        .total-row {
+            background-color: #d3d3d3;
+            font-weight: bold;
+        }
+
+        .back-btn {
+            padding: 10px 20px;
+            background-color: #d9534f;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .back-btn:hover {
+            background-color: #c9302c;
+        }
+    </style>
+</head>
+<body>
+    <div class="sales-container">
+        <h1>Registro de Ventas del Jefe</h1>
+
+        <!-- Tabla de ventas -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Precio Unitario</th>
+                    <th>Cantidad</th>
+                    <th>Total</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for fecha, ventas in ventas_por_fecha.items %}
+                    <tr class="date-header">
+                        <td colspan="5">Ventas del {{ fecha|date:"d M, Y" }}</td>
+                    </tr>
+                    {% for venta in ventas %}
+                        <tr>
+                            <td>{{ venta.producto.nombre }}</td>
+                            <td>${{ venta.producto.precio|floatformat:2 }}</td>
+                            <td>{{ venta.cantidad }}</td>
+                            <td>${{ venta.total|floatformat:2 }}</td>
+                            <td>{{ venta.fecha }}</td>
+                        </tr>
+                    {% endfor %}
+                {% endfor %}
+                
+                <tr class="total-row">
+                    <td colspan="4">Total General:</td>
+                    <td>${{ total_general|floatformat:2 }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <a href="{% url 'jefe_dashboard' %}" class="back-btn"><i class="fas fa-arrow-left"></i> Volver</a>
+    </div>
+</body>
+</html>

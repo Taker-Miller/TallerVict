@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Registro de Ventas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .sales-container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            width: 1000px;
+            text-align: center;
+        }
+
+        .sales-container h1 {
+            font-size: 28px;
+            color: #580367;
+            margin-bottom: 20px;
+        }
+
+        .search-bar {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .search-bar input {
+            padding: 10px;
+            font-size: 16px;
+            width: 50%;
+            border: 1px solid #580367;
+            border-radius: 5px 0 0 5px;
+            outline: none;
+        }
+
+        .search-bar select {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #580367;
+            border-left: none;
+            outline: none;
+            width: 20%;
+        }
+
+        .search-bar button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #580367;
+            color: white;
+            border: none;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .search-bar button:hover {
+            background-color: #6f0b75;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #580367;
+            color: white;
+        }
+
+        td {
+            color: #333;
+        }
+
+        .register-btn {
+            padding: 10px 20px;
+            background-color: #1f8b4c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 10px;
+        }
+
+        .back-btn {
+            padding: 10px 20px;
+            background-color: #d9534f;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 10px;
+        }
+
+        .register-btn:hover {
+            background-color: #16673c;
+        }
+
+        .back-btn:hover {
+            background-color: #c9302c;
+        }
+
+        .total-item {
+            background-color: #6f0b75;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: right;
+            font-size: 20px;
+            margin-bottom: 30px;
+        }
+
+        .button-container {
+            margin-top: 20px;
+        }
+
+        .no-results {
+            display: none;
+            color: red;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sales-container">
+        <h1>Registro de Ventas</h1>
+
+        <div id="noResults" class="no-results">No se encontraron resultados</div>
+
+        <form class="search-bar" onsubmit="filterSales(event)">
+            <input type="text" id="searchInput" placeholder="Buscar..." name="busqueda">
+            <select id="searchOption" onchange="changeInputType()">
+                <option value="mostrar_todo">Mostrar todo</option>
+                <option value="producto">Producto</option>
+                <option value="cantidad">Cantidad</option>
+                <option value="fecha">Fecha</option>
+            </select>
+            <button type="submit"><i class="fas fa-search"></i> Buscar</button>
+        </form>
+
+        <!-- Ventas del día -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Precio Unitario</th>
+                    <th>Cantidad</th>
+                    <th>Subtotal</th>
+                    <th>Total</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody id="salesBody">
+                {% for venta_fecha, ventas in ventas_por_fecha.items %}
+                    <tr>
+                        <td colspan="6" style="text-align: center; font-weight: bold;">Ventas del {{ venta_fecha }}</td>
+                    </tr>
+                    {% for venta in ventas %}
+                    <tr>
+                        <td>{{ venta.producto.nombre }}</td>
+                        <td>${{ venta.producto.precio }}</td>
+                        <td>{{ venta.cantidad }}</td>
+                        <td>${{ venta.cantidad|floatformat:0|add:venta.producto.precio|floatformat:0 }}</td>
+                        <td>${{ venta.total }}</td>
+                        <td>{{ venta.fecha|date:"d-m-Y" }}</td>
+                    </tr>
+                    {% endfor %}
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="total-item">
+            Total del día: ${{ total_dia|dictsort:"0"|join:"" }} <!-- Display total for each date -->
+        </div>
+
+        <div class="button-container">
+            <a href="{% url 'anadir_venta' %}" class="register-btn">Registrar Venta</a>
+            <a href="{% url 'trabajador_dashboard' %}" class="back-btn"><i class="fas fa-arrow-left"></i> Volver</a>
+        </div>
+    </div>
+
+    <script>
+        function filterSales(event) {
+            event.preventDefault();
+
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const searchOption = document.getElementById('searchOption').value;
+            const rows = document.querySelectorAll('#salesBody tr');
+            let found = false;
+
+            document.getElementById('noResults').style.display = 'none';
+
+            rows.forEach(row => {
+                const producto = row.children[0]?.textContent.toLowerCase();
+                const cantidad = row.children[2]?.textContent.toLowerCase();
+                const fecha = row.children[5]?.textContent.toLowerCase();
+
+                let fieldToCheck;
+                if (searchOption === "producto") {
+                    fieldToCheck = producto;
+                } else if (searchOption === "cantidad") {
+                    fieldToCheck = cantidad;
+                } else if (searchOption === "fecha") {
+                    fieldToCheck = fecha;
+                }
+
+                if (searchOption === "mostrar_todo") {
+                    row.style.display = '';
+                    found = true;
+                } else if (fieldToCheck?.includes(searchInput)) {
+                    row.style.display = '';
+                    found = true;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            if (!found && searchOption !== 'mostrar_todo') {
+                document.getElementById('noResults').style.display = 'block';
+            }
+        }
+
+        function changeInputType() {
+            const searchInput = document.getElementById('searchInput');
+            const searchOption = document.getElementById('searchOption').value;
+
+            if (searchOption === 'fecha') {
+                searchInput.type = 'date';
+            } else if (searchOption === 'cantidad') {
+                searchInput.type = 'number';
+                searchInput.placeholder = 'Buscar cantidad...';
+            } else {
+                searchInput.type = 'text';
+                searchInput.placeholder = 'Buscar...';
+            }
+        }
+    </script>
+
+</body>
+</html>
