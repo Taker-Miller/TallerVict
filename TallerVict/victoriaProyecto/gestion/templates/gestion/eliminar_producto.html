@@ -76,24 +76,47 @@
             width: 80px;
             margin: 0 auto 20px;
         }
+
+        /* Estilo para el cuadro de alerta de cierre de sesión */
+        .logout-alert {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .logout-alert h2 {
+            font-size: 24px;
+            color: #580367;
+            margin-bottom: 10px;
+        }
+
+        .close-btn {
+            padding: 10px 20px;
+            background-color: #580367;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
 
-    <!-- Script para cierre de sesión automático tras 30 minutos de inactividad -->
-    <script>
-        let timeout;
-        function resetTimer() {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => {
-                window.location.href = "{% url 'logout' %}";
-            }, 1800000);  // 30 minutos en milisegundos
-        }
-
-        window.onload = resetTimer;
-        document.onmousemove = resetTimer;
-        document.onkeypress = resetTimer;
-    </script>
+    <!-- Alerta de cierre de sesión por inactividad -->
+    <div class="logout-alert" id="logoutAlert">
+        <h2>Sesión cerrada</h2>
+        <p>Su sesión ha sido cerrada por inactividad.</p>
+        <button class="close-btn" onclick="closeAlert()">Cerrar</button>
+    </div>
 
     <div class="confirmation-container">
         <!-- Imagen de advertencia -->
@@ -110,6 +133,31 @@
             </div>
         </form>
     </div>
+
+    <script>
+        // Función para mostrar la alerta de cierre de sesión
+        function showLogoutAlert() {
+            document.getElementById('logoutAlert').style.display = 'block';
+        }
+
+        // Función para cerrar la alerta y redirigir al usuario al logout
+        function closeAlert() {
+            document.getElementById('logoutAlert').style.display = 'none';
+            window.location.href = "{% url 'logout' %}";  // URL de cierre de sesión
+        }
+
+        // Configuración del temporizador de inactividad
+        let timeout;
+        function resetTimer() {
+            clearTimeout(timeout);
+            timeout = setTimeout(showLogoutAlert, 30000); // 30 segundos para pruebas
+        }
+
+        // Reiniciar temporizador en eventos de actividad del usuario
+        window.onload = resetTimer;
+        document.onmousemove = resetTimer;
+        document.onkeypress = resetTimer;
+    </script>
 
 </body>
 </html>

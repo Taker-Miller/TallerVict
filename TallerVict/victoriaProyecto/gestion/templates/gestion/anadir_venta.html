@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Añadir Venta</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
@@ -83,6 +82,37 @@
         .button-group a:hover {
             background-color: #c9302c;
         }
+
+        /* Alerta de inactividad */
+        .logout-alert {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .logout-alert h2 {
+            font-size: 24px;
+            color: #580367;
+            margin-bottom: 10px;
+        }
+
+        .close-btn {
+            padding: 10px 20px;
+            background-color: #580367;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -120,6 +150,13 @@
         </form>
     </div>
 
+    <!-- Alerta de inactividad -->
+    <div class="logout-alert" id="logoutAlert">
+        <h2>Sesión cerrada</h2>
+        <p>Su sesión ha sido cerrada por inactividad.</p>
+        <button class="close-btn" onclick="closeAlert()">Cerrar</button>
+    </div>
+
     <script>
         // Script para actualizar el stock máximo disponible
         const productoSelect = document.getElementById('producto');
@@ -131,12 +168,34 @@
             cantidadInput.max = stockDisponible; // Limitar la cantidad según el stock disponible
         });
 
-        // Inicializar el max con el primer producto seleccionado
         window.onload = function() {
             const selectedOption = productoSelect.options[productoSelect.selectedIndex];
             const stockDisponible = selectedOption.getAttribute('data-stock');
             cantidadInput.max = stockDisponible;
         }
+
+        // Mostrar alerta de cierre de sesión después de 30 segundos de inactividad
+        function showLogoutAlert() {
+            document.getElementById('logoutAlert').style.display = 'block';
+        }
+
+        // Cerrar la alerta y redirigir al usuario al cierre de sesión
+        function closeAlert() {
+            document.getElementById('logoutAlert').style.display = 'none';
+            window.location.href = "{% url 'logout' %}";
+        }
+
+        // Inicialización del temporizador de inactividad
+        let timeout;
+        function resetTimer() {
+            clearTimeout(timeout);
+            timeout = setTimeout(showLogoutAlert, 30000); // 30 segundos de inactividad para mostrar la alerta
+        }
+
+        // Reiniciar temporizador en eventos de actividad del usuario
+        window.onload = resetTimer;
+        document.onmousemove = resetTimer;
+        document.onkeypress = resetTimer;
     </script>
 
 </body>

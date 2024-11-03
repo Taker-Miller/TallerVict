@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Inventario</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
@@ -113,6 +112,37 @@
         .back-btn:hover {
             background-color: #c9302c;
         }
+
+        /* Estilo para el cuadro de alerta de cierre de sesión */
+        .logout-alert {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .logout-alert h2 {
+            font-size: 24px;
+            color: #580367;
+            margin-bottom: 10px;
+        }
+
+        .close-btn {
+            padding: 10px 20px;
+            background-color: #580367;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -165,16 +195,22 @@
 
     </div>
 
+    <!-- Alerta de cierre de sesión por inactividad -->
+    <div class="logout-alert" id="logoutAlert">
+        <h2>Sesión cerrada</h2>
+        <p>Su sesión ha sido cerrada por inactividad.</p>
+        <button class="close-btn" onclick="closeAlert()">Cerrar</button>
+    </div>
+
     <script>
         function filterInventory(event) {
-            event.preventDefault(); // Prevenir el envío del formulario
+            event.preventDefault();
 
             const searchQuery = document.getElementById('search').value.toLowerCase();
             const filterOption = document.getElementById('filterOption').value;
             const rows = document.querySelectorAll('#inventoryBody tr');
             let matchFound = false;
 
-            // Ocultar mensaje de error inicialmente
             document.getElementById('errorMessage').style.display = 'none';
 
             rows.forEach(row => {
@@ -203,33 +239,50 @@
                 } else {
                     row.style.display = 'none';
                 }
-
-                // Comprobar el stock mínimo y mostrar una ventana emergente
-                const stockValue = parseInt(row.getAttribute('data-stock'));
-                const stockMinimo = 5; // Define el nivel de stock mínimo
-                if (stockValue < stockMinimo) {
-                    alert(`¡Atención! El stock de "${producto}" está por debajo del mínimo (${stockMinimo}).`);
-                }
             });
 
-            // Si no se encuentra ningún resultado
             if (!matchFound && searchQuery) {
                 document.getElementById('errorMessage').style.display = 'block';
             }
         }
 
-        // Cerrar sesión automáticamente después de 30 minutos de inactividad
+        // Mostrar alerta de cierre de sesión después de 30 segundos de inactividad
+        function showLogoutAlert() {
+            document.getElementById('logoutAlert').style.display = 'block';
+        }
+
+        // Cerrar la alerta y redirigir al usuario al cierre de sesión
+        function closeAlert() {
+            document.getElementById('logoutAlert').style.display = 'none';
+            window.location.href = "{% url 'logout' %}";
+        }
+
+        // Verificar stock mínimo y mostrar alerta si está bajo
+        function checkStockLevels() {
+            const rows = document.querySelectorAll('#inventoryBody tr');
+            const stockMinimo = 5; // Definir el nivel de stock mínimo
+
+            rows.forEach(row => {
+                const stockValue = parseInt(row.getAttribute('data-stock'));
+                const producto = row.getAttribute('data-producto');
+
+                if (stockValue < stockMinimo) {
+                    alert(`¡Atención! El stock de "${producto}" está por debajo del mínimo (${stockMinimo}).`);
+                }
+            });
+        }
+
+        // Inicialización del temporizador de inactividad y verificación de stock al cargar la página
         let timeout;
         function resetTimer() {
             clearTimeout(timeout);
-            timeout = setTimeout(() => {
-                alert('Has estado inactivo por 30 minutos. Se cerrará la sesión.');
-                window.location.href = "{% url 'logout' %}";  // Redirige al usuario al cerrar sesión
-            }, 1800000);  // 1800000ms = 30 minutos
+            timeout = setTimeout(showLogoutAlert, 30000); // 30 segundos para pruebas
         }
-        
-        // Reiniciar el temporizador en eventos de interacción del usuario
-        window.onload = resetTimer;
+
+        window.onload = () => {
+            resetTimer();
+            checkStockLevels(); // Verificar el stock al cargar la página
+        };
         document.onmousemove = resetTimer;
         document.onkeypress = resetTimer;
     </script>

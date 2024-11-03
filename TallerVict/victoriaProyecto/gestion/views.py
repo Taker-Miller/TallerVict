@@ -8,6 +8,8 @@ from django.contrib import messages
 from .forms import ProductoForm, VentaForm
 from .models import Producto
 from .forms import ProductoForm
+from django.contrib.auth.models import User
+
 from .models import Empleado, Producto, Venta 
 
 # Vista de login
@@ -15,17 +17,25 @@ def login_view(request):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
+        
+        # Intentar autenticar al usuario
         user = authenticate(request, username=username, password=password)
+        
         if user is not None:
             login(request, user)
-            if user.username == 'jefe':  # Detecta si el usuario es el jefe
+            if user.username == 'jefe':
                 request.session['role'] = 'jefe'
-                return redirect('jefe_dashboard')  # Redirige al dashboard del jefe
+                return redirect('jefe_dashboard')
             elif user.username == 'trabajador':
                 request.session['role'] = 'trabajador'
-                return redirect('trabajador_dashboard')  # Redirige al dashboard del trabajador
+                return redirect('trabajador_dashboard')
         else:
-            messages.error(request, 'Nombre de usuario o contraseña incorrectos.')
+            # Verificar si el usuario existe en la base de datos
+            if not User.objects.filter(username=username).exists():
+                messages.error(request, 'Nombre de usuario incorrecto.')
+            else:
+                messages.error(request, 'Contraseña incorrecta.')
+                
     return render(request, 'gestion/login.html')
 
 

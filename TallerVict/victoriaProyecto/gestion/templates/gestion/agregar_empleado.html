@@ -80,16 +80,56 @@
         #codigo-container {
             display: none;
         }
+
+        /* Estilo para la alerta de cierre de sesión */
+        .logout-alert {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .logout-alert h2 {
+            font-size: 24px;
+            color: #580367;
+            margin-bottom: 10px;
+        }
+
+        .close-btn {
+            padding: 10px 20px;
+            background-color: #580367;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
     </style>
     <script>
-        // Función para redirigir al usuario después de 10 segundos de inactividad
         let timeout;
 
+        // Mostrar alerta de cierre de sesión
+        function showLogoutAlert() {
+            document.getElementById('logoutAlert').style.display = 'block';
+        }
+
+        // Redirigir y cerrar la alerta
+        function closeAlert() {
+            document.getElementById('logoutAlert').style.display = 'none';
+            window.location.href = "{% url 'logout' %}";
+        }
+
+        // Inicialización del temporizador de inactividad
         function resetTimer() {
             clearTimeout(timeout);
-            timeout = setTimeout(() => {
-                window.location.href = "{% url 'logout' %}";  // URL de cierre de sesión
-            }, 10000); // 10 segundos en milisegundos
+            timeout = setTimeout(showLogoutAlert, 10000); // 10 segundos
         }
 
         // Escucha de eventos de usuario para reiniciar el temporizador
@@ -98,7 +138,6 @@
         document.addEventListener('click', resetTimer);
         document.addEventListener('scroll', resetTimer);
 
-        // Inicializar el temporizador en cuanto la página se carga
         window.onload = resetTimer;
 
         function toggleCodigoField() {
@@ -149,5 +188,12 @@
     </form>
 
     <a href="{% url 'lista_empleados' %}"><i class="fas fa-arrow-left"></i> Volver a la lista de empleados</a>
+
+    <!-- Alerta de cierre de sesión por inactividad -->
+    <div class="logout-alert" id="logoutAlert">
+        <h2>Sesión cerrada</h2>
+        <p>Su sesión ha sido cerrada por inactividad.</p>
+        <button class="close-btn" onclick="closeAlert()">Cerrar</button>
+    </div>
 </body>
 </html>
