@@ -39,17 +39,23 @@ class Venta(models.Model):
     def __str__(self):
         return f'{self.producto.nombre} - {self.cantidad} unidades'
 
+
 class Empleado(models.Model):
-    ROL_CHOICES = [
-        ('jefe', 'Jefe'),
-        ('trabajador', 'Trabajador'),
+    ROLES = [
+        ('Empleado', 'Empleado'),
+        ('Jefe', 'Jefe'),
     ]
     
-    nombre = models.CharField(max_length=100)
-    rol = models.CharField(max_length=50, choices=ROL_CHOICES)  # Campo de selección
-    email = models.EmailField(unique=True, default='placeholder@example.com')  
-    telefono = models.CharField(max_length=15, blank=True, null=True)
-    direccion = models.CharField(max_length=255, blank=True, null=True)
+    nombre = models.CharField(max_length=255)
+    apellido = models.CharField(max_length=255, blank=True, null=True)   
+    rol = models.CharField(max_length=10, choices=ROLES)
+    codigo = models.CharField(max_length=10, blank=True, null=True)  
+    imagen = models.ImageField(upload_to='empleados/', blank=True, null=True)
 
     def __str__(self):
-        return f"{self.nombre} ({self.get_rol_display()})"
+        return f"{self.nombre} {self.apellido}"
+
+
+
+
+

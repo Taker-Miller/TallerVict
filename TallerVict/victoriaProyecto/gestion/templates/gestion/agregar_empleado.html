@@ -129,7 +129,7 @@
         // Inicialización del temporizador de inactividad
         function resetTimer() {
             clearTimeout(timeout);
-            timeout = setTimeout(showLogoutAlert, 10000); // 10 segundos
+            timeout = setTimeout(showLogoutAlert, 10000); // 10 segundos de inactividad
         }
 
         // Escucha de eventos de usuario para reiniciar el temporizador
@@ -141,49 +141,38 @@
         window.onload = resetTimer;
 
         function toggleCodigoField() {
-            const rolSelect = document.getElementById("rol");
+            const rolSelect = document.getElementById("id_rol");
             const codigoContainer = document.getElementById("codigo-container");
 
             if (rolSelect.value === "Jefe") {
                 codigoContainer.style.display = "block";
             } else {
                 codigoContainer.style.display = "none";
+                document.getElementById("id_codigo").value = ""; // Limpiar el campo de código si no es jefe
             }
         }
 
-        function validarFormulario(evento) {
-            const rolSelect = document.getElementById("rol").value;
-            const codigoInput = document.getElementById("codigo").value;
-
-            if (rolSelect === "Jefe" && codigoInput !== "123") {
-                alert("Código incorrecto. Por favor, ingresa el código correcto para asignar el rol de Jefe.");
-                evento.preventDefault();
-            }
-        }
+        document.addEventListener("DOMContentLoaded", function () {
+            toggleCodigoField();  // Llamar a la función para ocultar o mostrar el campo según el valor inicial
+            document.getElementById("id_rol").addEventListener("change", toggleCodigoField);
+        });
     </script>
 </head>
 <body>
     <h1>Agregar Nuevo Empleado</h1>
 
-    <form method="POST" enctype="multipart/form-data" onsubmit="validarFormulario(event)">
+    <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-        <label for="nombre">Nombre:</label>
-        <input type="text" id="nombre" name="nombre" placeholder="Ingresa el nombre del empleado" required>
-
-        <label for="rol">Rol:</label>
-        <select name="rol" id="rol" onchange="toggleCodigoField()" required>
-            <option value="Empleado">Empleado</option>
-            <option value="Jefe">Jefe</option>
-        </select>
-
+        {{ form.nombre.label_tag }} {{ form.nombre }}
+        {{ form.apellido.label_tag }} {{ form.apellido }}  <!-- Campo nuevo de apellido -->
+        {{ form.rol.label_tag }} {{ form.rol }}
+        
+        <!-- Contenedor del código, inicialmente oculto y se muestra solo si el rol es Jefe -->
         <div id="codigo-container">
-            <label for="codigo">Código de Autorización:</label>
-            <input type="text" id="codigo" name="codigo" placeholder="Ingrese el código">
+            {{ form.codigo.label_tag }} {{ form.codigo }}
         </div>
-
-        <label for="imagen">Imagen del Empleado:</label>
-        <input type="file" id="imagen" name="imagen">
-
+        
+        {{ form.imagen.label_tag }} {{ form.imagen }}
         <button type="submit">Agregar</button>
     </form>
 

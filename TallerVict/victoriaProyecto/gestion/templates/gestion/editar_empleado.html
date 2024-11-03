@@ -51,6 +51,17 @@
             font-size: 16px;
         }
 
+        .edit-form .readonly-field {
+            padding: 10px;
+            margin-bottom: 15px;
+            background-color: #f4f4f9;
+            color: #333;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: not-allowed;
+        }
+
         .edit-form button {
             padding: 10px 20px;
             background-color: #580367;
@@ -131,8 +142,11 @@
             <label for="nombre">Nombre:</label>
             <input type="text" name="nombre" value="{{ empleado.nombre }}" required>
 
+            <label for="apellido">Apellido:</label>
+            <input type="text" name="apellido" value="{{ empleado.apellido }}" required>
+
             <label for="rol">Rol:</label>
-            <input type="text" name="rol" value="{{ empleado.rol }}" required>
+            <div class="readonly-field">{{ empleado.rol }}</div> <!-- Campo de rol no editable -->
 
             <button type="submit">Guardar Cambios</button>
         </form>

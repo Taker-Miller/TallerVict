@@ -159,29 +159,24 @@ def generar_reportes_view(request):
     })
 
 
-# Vista para la lista de empleados
-def lista_empleados(request):
-    empleados = Empleado.objects.all()
-    return render(request, 'gestion/lista_empleados.html', {'empleados': empleados})
 
-# Vista para agregar un empleado (esto lo usaremos más adelante)
-def agregar_empleado(request):
-    if request.method == 'POST':
-        nombre = request.POST.get('nombre')
-        rol = request.POST.get('rol')
-        Empleado.objects.create(nombre=nombre, rol=rol)
-        return redirect('lista_empleados')
-    return render(request, 'gestion/agregar_empleado.html')
 
-# Vista para editar un empleado (esto lo usaremos más adelante)
+
+
+
+# Vista para editar un empleado sin modificar el rol
 def editar_empleado(request, pk):
     empleado = get_object_or_404(Empleado, pk=pk)
     if request.method == 'POST':
+        # Actualizar solo los campos permitidos (nombre y apellido)
         empleado.nombre = request.POST.get('nombre')
-        empleado.rol = request.POST.get('rol')
+        empleado.apellido = request.POST.get('apellido')
+        # No actualizamos el campo `rol`
         empleado.save()
         return redirect('lista_empleados')
+    
     return render(request, 'gestion/editar_empleado.html', {'empleado': empleado})
+
 
 # Vista para eliminar un empleado
 def eliminar_empleado(request, pk):
@@ -197,13 +192,27 @@ def gestion_empleados(request):
 
 
 
+# gestion/views.py
+from django.shortcuts import render, redirect
+from .forms import EmpleadoForm
+from .models import Empleado
+
 def agregar_empleado(request):
-    # Lógica para agregar empleado
-    return render(request, 'gestion/agregar_empleado.html')
+    # Lógica para manejar el formulario de agregar empleado
+    if request.method == "POST":
+        form = EmpleadoForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('lista_empleados')  # Redirige a la lista de empleados después de agregar
+    else:
+        form = EmpleadoForm()
+    return render(request, 'gestion/agregar_empleado.html', {'form': form})
 
 def lista_empleados(request):
     # Lógica para mostrar la lista de empleados
-    return render(request, 'gestion/lista_empleados.html')
+    empleados = Empleado.objects.all()
+    return render(request, 'gestion/lista_empleados.html', {'empleados': empleados})
+
 
 
 # Vista para el dashboard del trabajador

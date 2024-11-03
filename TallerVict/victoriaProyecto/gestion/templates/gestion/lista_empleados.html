@@ -148,8 +148,9 @@
         <thead>
             <tr>
                 <th>Imagen</th>
-                <th>Nombre del Empleado</th>
-                <th>Rol del Empleado</th>
+                <th>Nombre</th>
+                <th>Apellido</th> <!-- Nueva columna de Apellido -->
+                <th>Rol</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -160,6 +161,7 @@
                     <img src="{% if empleado.imagen %}{{ empleado.imagen.url }}{% else %}https://via.placeholder.com/50{% endif %}" alt="Imagen de {{ empleado.nombre }}">
                 </td>
                 <td>{{ empleado.nombre }}</td>
+                <td>{{ empleado.apellido }}</td> <!-- Mostrar el apellido del empleado -->
                 <td>{{ empleado.get_rol_display }}</td>
                 <td>
                     <a href="{% url 'editar_empleado' empleado.id %}" class="btn btn-edit">Editar</a>
@@ -168,7 +170,7 @@
             </tr>
             {% empty %}
             <tr>
-                <td colspan="4">No hay empleados registrados.</td>
+                <td colspan="5">No hay empleados registrados.</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -199,7 +201,7 @@
         let timeout;
         function resetTimer() {
             clearTimeout(timeout);
-            timeout = setTimeout(showLogoutAlert, 30000); // 30 segundos
+            timeout = setTimeout(showLogoutAlert, 30000); // 30 segundos de inactividad
         }
 
         // Reiniciar temporizador en eventos de actividad del usuario

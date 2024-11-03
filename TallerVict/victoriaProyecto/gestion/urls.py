@@ -13,15 +13,11 @@ urlpatterns = [
     # Venta
     path('anadir_venta/', views.anadir_venta, name='anadir_venta'),
     path('registro_ventas/', views.registro_ventas, name='registro_ventas'),
+    path('registrar_venta/', views.registrar_venta, name='registrar_venta'),
 
     # Inventario
     path('inventario/', views.inventario_view, name='inventario'),
     path('inventario-jefe/', views.inventario_jefe_view, name='inventario_jefe'),
-
-    # Registro de Ventas
-    path('registro_ventas/', views.registro_ventas_view, name='registro_ventas'),
-    path('registrar_venta/', views.registrar_venta, name='registrar_venta'),
-
 
     # Registro de Ventas para el Jefe
     path('ventas_jefe/', views.registro_ventas_jefe_view, name='ventas_jefe'),
@@ -30,12 +26,14 @@ urlpatterns = [
     path('reportes/', views.generar_reportes_view, name='generar_reportes'),
 
     # Gestión de Empleados
-    path('empleados/', views.lista_empleados, name='lista_empleados'),  # Ruta para la lista de empleados
+    path('empleados/', views.lista_empleados, name='lista_empleados'),
     path('empleados/gestion/', views.gestion_empleados, name='gestion_empleados'),
-    path('empleados/agregar/', views.agregar_empleado, name='agregar_empleado'),  # Ruta para agregar empleado
-    path('empleados/<int:pk>/editar/', views.editar_empleado, name='editar_empleado'),  # Ruta para editar empleado
-    path('empleados/<int:pk>/eliminar/', views.eliminar_empleado, name='eliminar_empleado'),  # Ruta para eliminar empleado
-    path('lista-empleados/', views.lista_empleados, name='lista_empleados'),
+    path('empleados/agregar/', views.agregar_empleado, name='agregar_empleado'),
+    path('empleados/<int:pk>/editar/', views.editar_empleado, name='editar_empleado'),
+    path('empleados/<int:pk>/eliminar/', views.eliminar_empleado, name='eliminar_empleado'),
+    
+
+
 
     # Incluir las URLs de la app gestion
     path('gestion/', include('gestion.urls')),

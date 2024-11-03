@@ -5,11 +5,12 @@ from django.conf.urls.static import static
 from gestion import views
 
 urlpatterns = [
+    # Admin
     path('admin/', admin.site.urls),
-    
+
     # Login y Logout
     path('login/', views.login_view, name='login'),
-    path('logout/', views.logout_view, name='logout'),  # Ruta de logout
+    path('logout/', views.logout_view, name='logout'),
 
     # Dashboards
     path('jefe_dashboard/', views.jefe_dashboard, name='jefe_dashboard'),
@@ -28,22 +29,20 @@ urlpatterns = [
     # Venta
     path('anadir_venta/', views.anadir_venta, name='anadir_venta'),
     path('registro_ventas/', views.registro_ventas, name='registro_ventas'),
-
-    # Registro de Ventas
-    path('registro_ventas/', views.registro_ventas_view, name='registro_ventas'),
     path('registrar_venta/', views.registrar_venta, name='registrar_venta'),
-    path('ventas_jefe/', views.registro_ventas_jefe_view, name='ventas_jefe'), # Ruta para el registro de ventas del jefe
+
+    # Registro de Ventas para el Jefe
+    path('ventas_jefe/', views.registro_ventas_jefe_view, name='ventas_jefe'),
 
     # Reportes
     path('reportes/', views.generar_reportes_view, name='generar_reportes'),
 
     # Gestión de Empleados
-    path('empleados/', views.lista_empleados, name='lista_empleados'),  # Ruta para la lista de empleados
+    path('empleados/', views.lista_empleados, name='lista_empleados'),
     path('empleados/gestion/', views.gestion_empleados, name='gestion_empleados'),
-    path('empleados/agregar/', views.agregar_empleado, name='agregar_empleado'),  # Ruta para agregar empleado
-    path('empleados/<int:pk>/editar/', views.editar_empleado, name='editar_empleado'),  # Ruta para editar empleado
-    path('empleados/<int:pk>/eliminar/', views.eliminar_empleado, name='eliminar_empleado'),  # Ruta para eliminar empleado
-    path('lista-empleados/', views.lista_empleados, name='lista_empleados'),
+    path('empleados/agregar/', views.agregar_empleado, name='agregar_empleado'),
+    path('empleados/<int:pk>/editar/', views.editar_empleado, name='editar_empleado'),
+    path('empleados/<int:pk>/eliminar/', views.eliminar_empleado, name='eliminar_empleado'),
 
     # Redirigir la raíz al login
     path('', views.login_view, name='home'),
