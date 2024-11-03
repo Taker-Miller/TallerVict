@@ -166,6 +166,43 @@
             cursor: pointer;
             margin-top: 10px;
         }
+
+        /* Estilo para el cuadro de alerta de stock mínimo */
+        .stock-alert {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .stock-alert h2 {
+            font-size: 24px;
+            color: #580367;
+            margin-bottom: 10px;
+        }
+
+        .close-stock-btn {
+            padding: 10px 20px;
+            background-color: #580367;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .stock-alert p {
+            margin: 0;
+            padding: 0;
+            text-align: left; /* Alinear el texto a la izquierda */
+        }
     </style>
 </head>
 <body>
@@ -223,15 +260,44 @@
         <button class="close-btn" onclick="closeAlert()">Cerrar</button>
     </div>
 
+    <!-- Alerta de stock mínimo -->
+    <div class="stock-alert" id="stockAlert">
+        <h2>Atención de Stock Mínimo</h2>
+        <p id="stockAlertMessage"></p>
+        <button class="close-stock-btn" onclick="closeStockAlert()">Cerrar</button>
+    </div>
+
     <script>
         // Verifica el stock de los productos y muestra una alerta si está por debajo de un mínimo
-        document.querySelectorAll('tr[data-stock]').forEach(row => {
-            const stockValue = parseInt(row.getAttribute('data-stock'));
+        document.addEventListener("DOMContentLoaded", function() {
+            let lowStockProducts = [];
             const stockMinimo = 5; // Define el nivel de stock mínimo
-            if (stockValue < stockMinimo) {
-                alert(`¡Atención! El stock de "${row.getAttribute('data-producto')}" está por debajo del mínimo (${stockMinimo}).`);
+
+            document.querySelectorAll('tr[data-stock]').forEach((row, index) => {
+                const stockValue = parseInt(row.getAttribute('data-stock'));
+                const producto = row.getAttribute('data-producto');
+
+                if (stockValue < stockMinimo) {
+                    lowStockProducts.push(producto);
+                }
+            });
+
+            // Mostrar alerta si hay productos con stock bajo
+            if (lowStockProducts.length > 0) {
+                showStockAlert(lowStockProducts);
             }
         });
+
+        // Mostrar alerta de stock mínimo
+        function showStockAlert(products) {
+            const message = `Los siguientes productos están por debajo del mínimo: <br>${products.map((product, index) => `${index + 1}) ${product}`).join('<br>')}`;
+            document.getElementById('stockAlertMessage').innerHTML = message; // Usar innerHTML para permitir saltos de línea
+            document.getElementById('stockAlert').style.display = 'block';
+        }
+
+        function closeStockAlert() {
+            document.getElementById('stockAlert').style.display = 'none';
+        }
 
         // Función para mostrar la alerta de cierre de sesión
         function showLogoutAlert() {

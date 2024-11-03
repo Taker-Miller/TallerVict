@@ -143,6 +143,43 @@
             cursor: pointer;
             margin-top: 10px;
         }
+
+        /* Estilo para el cuadro de alerta de stock mínimo */
+        .stock-alert {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .stock-alert h2 {
+            font-size: 24px;
+            color: #580367;
+            margin-bottom: 10px;
+        }
+
+        .close-stock-btn {
+            padding: 10px 20px;
+            background-color: #580367;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .stock-alert p {
+            margin: 0;
+            padding: 0;
+            text-align: left; /* Alinear el texto a la izquierda */
+        }
     </style>
 </head>
 <body>
@@ -202,6 +239,13 @@
         <button class="close-btn" onclick="closeAlert()">Cerrar</button>
     </div>
 
+    <!-- Alerta de stock mínimo -->
+    <div class="stock-alert" id="stockAlert">
+        <h2>Atención de Stock Mínimo</h2>
+        <p id="stockAlertMessage"></p>
+        <button class="close-stock-btn" onclick="closeStockAlert()">Cerrar</button>
+    </div>
+
     <script>
         function filterInventory(event) {
             event.preventDefault();
@@ -246,30 +290,44 @@
             }
         }
 
-        // Mostrar alerta de cierre de sesión después de 30 segundos de inactividad
         function showLogoutAlert() {
             document.getElementById('logoutAlert').style.display = 'block';
         }
 
-        // Cerrar la alerta y redirigir al usuario al cierre de sesión
         function closeAlert() {
             document.getElementById('logoutAlert').style.display = 'none';
             window.location.href = "{% url 'logout' %}";
         }
 
-        // Verificar stock mínimo y mostrar alerta si está bajo
+        // Mostrar alerta de stock mínimo
+        function showStockAlert(products) {
+            const message = `Los siguientes productos están por debajo del mínimo: <br>${products.map((product, index) => `${index + 1}) ${product}`).join('<br>')}`;
+            document.getElementById('stockAlertMessage').innerHTML = message; // Usar innerHTML para permitir saltos de línea
+            document.getElementById('stockAlert').style.display = 'block';
+        }
+
+        function closeStockAlert() {
+            document.getElementById('stockAlert').style.display = 'none';
+        }
+
+        // Verificar stock mínimo y mostrar alerta si hay productos bajos en stock
         function checkStockLevels() {
             const rows = document.querySelectorAll('#inventoryBody tr');
             const stockMinimo = 5; // Definir el nivel de stock mínimo
+            let lowStockProducts = [];
 
             rows.forEach(row => {
                 const stockValue = parseInt(row.getAttribute('data-stock'));
                 const producto = row.getAttribute('data-producto');
 
                 if (stockValue < stockMinimo) {
-                    alert(`¡Atención! El stock de "${producto}" está por debajo del mínimo (${stockMinimo}).`);
+                    lowStockProducts.push(producto);
                 }
             });
+
+            if (lowStockProducts.length > 0) {
+                showStockAlert(lowStockProducts); // Mostrar alerta con todos los productos de stock bajo
+            }
         }
 
         // Inicialización del temporizador de inactividad y verificación de stock al cargar la página
